@@ -1,0 +1,7 @@
+# Bundle patch for dsh-550c-boot-deepseek.
+#
+# The row mounts the plugin; the package's `dsh.client` block is what gets the
+# browser half served and evaluated.
+- insert:
+    - id: boot-550c-deepseek
+      name: dsh-550c-boot-deepseek

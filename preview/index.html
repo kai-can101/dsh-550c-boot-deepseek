@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep seek · READY · 20.5s boot preview</title>
+<style>
+  html,body{margin:0;width:100%;height:100%;background:#050403;overflow:hidden;font-family:"SF Mono",Menlo,Monaco,Consolas,monospace}
+  #preview-ui{position:fixed;top:18px;right:18px;z-index:2147483002;display:flex;align-items:center;gap:10px;
+    padding:8px 12px;border:1px solid rgba(232,160,32,.28);background:rgba(5,4,3,.72);backdrop-filter:blur(8px);
+    color:#d8c090;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.42;transition:opacity .25s}
+  #preview-ui:hover{opacity:1}
+  #preview-ui .brand{color:#e8a020;letter-spacing:.2em;margin-right:4px}
+  #preview-ui button{border:1px solid rgba(232,160,32,.38);background:transparent;color:#e8c580;font:inherit;
+    font-size:10px;letter-spacing:.14em;padding:4px 8px;cursor:pointer}
+  #preview-ui button:hover{background:rgba(232,160,32,.14);color:#ffc043}
+  #preview-ui input[type=range]{width:86px;accent-color:#e8a020}
+  #preview-ui .vol{min-width:30px;text-align:right;color:#8a7248}
+  #preview-ui .state{color:#8a7248;min-width:72px;text-align:right}
+  #preview-ui .state.on{color:#b8c840}
+  #preview-ui .state.off{color:#e05030}
+  #preview-hint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2147483002;
+    color:rgba(216,192,144,.32);font-size:10px;letter-spacing:.28em;text-transform:uppercase;pointer-events:none}
+</style>
+<script>
+  window.__ModuleLoader__ = {
+    load(entry) {
+      const require = (name) => {
+        if (name === 'react') {
+          return {
+            createElement: () => null,
+            useState: (value) => [typeof value === 'function' ? value() : value, () => {}],
+            useEffect: () => {},
+            useCallback: (fn) => fn,
+            useRef: () => ({ current: null }),
+          };
+        }
+        return {};
+      };
+      try { entry.factory(require); } catch (error) { console.error('[preview] factory failed', error); }
+    }
+  };
+  try {
+    if (localStorage.getItem('dsh-550c-boot-deepseek:mode') === null) localStorage.setItem('dsh-550c-boot-deepseek:mode', 'full');
+    if (localStorage.getItem('dsh-550c-boot-deepseek:sound') === null) localStorage.setItem('dsh-550c-boot-deepseek:sound', 'on');
+    if (localStorage.getItem('dsh-550c-boot-deepseek:volume') === null) localStorage.setItem('dsh-550c-boot-deepseek:volume', '70');
+  } catch (error) { /* file:// 隐私模式 */ }
+  window.__dsdsFirstFrame = { end() {} };
+  window.__dsdsVersion = '0.4.0-ds.1';
+</script>
+</head>
+<body>
+<div id="preview-ui">
+  <span class="brand">DEEP SEEK // READY</span>
+  <button type="button" id="replay">REPLAY</button>
+  <button type="button" id="sound">SOUND ON</button>
+  <label style="display:flex;align-items:center;gap:6px">VOL
+    <input id="volume" type="range" min="0" max="100" step="1" value="70">
+    <span class="vol" id="volText">70%</span>
+  </label>
+  <span class="state" id="state">IDLE</span>
+</div>
+<div id="preview-hint">20.5s · 增强开场 · 无人机中段 · READY · 原创科幻电子音效 · ESC / CLICK TO SKIP</div>
+<script src="../lib/client.js"></script>
+<script>
+  (function () {
+    const SOUND_KEY = 'dsh-550c-boot-deepseek:sound';
+    const VOLUME_KEY = 'dsh-550c-boot-deepseek:volume';
+    const soundBtn = document.getElementById('sound');
+    const vol = document.getElementById('volume');
+    const volText = document.getElementById('volText');
+    const state = document.getElementById('state');
+    const replay = document.getElementById('replay');
+
+    function readSound() {
+      try { return localStorage.getItem(SOUND_KEY) !== 'off'; } catch (e) { return true; }
+    }
+    function readVolume() {
+      try { const v = Number(localStorage.getItem(VOLUME_KEY)); return Number.isFinite(v) ? v : 70; } catch (e) { return 70; }
+    }
+    function paintSound() {
+      const on = readSound();
+      soundBtn.textContent = on ? 'SOUND ON' : 'SOUND OFF';
+      soundBtn.style.color = on ? '#b8c840' : '#e05030';
+    }
+    function paintState() {
+      const value = window.__dsdsBoot ? window.__dsdsBoot.state() : 'idle';
+      state.textContent = String(value).toUpperCase();
+      state.className = 'state' + (value === 'playing' ? ' on' : value === 'muted' || value === 'off' ? ' off' : '');
+    }
+    soundBtn.addEventListener('click', function () {
+      const next = !readSound();
+      if (window.__dsdsBoot) window.__dsdsBoot.setSound(next);
+      paintSound();
+    });
+    vol.addEventListener('input', function () {
+      const value = Number(vol.value);
+      volText.textContent = value + '%';
+      if (window.__dsdsBoot) window.__dsdsBoot.setVolume(value);
+    });
+    replay.addEventListener('click', function () {
+      if (window.__dsdsBoot) window.__dsdsBoot.replay();
+    });
+    vol.value = String(readVolume());
+    volText.textContent = vol.value + '%';
+    paintSound();
+    paintState();
+    setInterval(paintState, 200);
+  })();
+</script>
+</body>
+</html>

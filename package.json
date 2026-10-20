@@ -1,0 +1,84 @@
+{
+  "name": "dsh-550c-boot-deepseek",
+  "version": "0.4.0-public.1",
+  "description": "Community DeepSeek Harness sci-fi boot plugin: 20.5-second Deep seek/UAV terminal intro, original synthesized soundtrack.",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "preview",
+    "cordis.patch.yml",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Community fork"
+  },
+  "contributors": [
+    {
+      "name": "Ziyang Song",
+      "url": "https://github.com/yannicksong0106",
+      "comment": "Original dsh-550c-boot 0.4.0"
+    },
+    {
+      "name": "Voidpocket",
+      "url": "https://github.com/Voidpocket",
+      "comment": "550C 片头动画与 HTML 源码"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kai-can101/dsh-550c-boot-deepseek.git"
+  },
+  "homepage": "https://github.com/kai-can101/dsh-550c-boot-deepseek",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-550c",
+    "deepseek",
+    "boot-animation",
+    "splash",
+    "deep-seek"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.2.0-rc.1"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ],
+      "platform": "web"
+    },
+    "suite": {
+      "id": "dsh-550c-deepseek",
+      "role": "boot",
+      "title": "Deep Seek",
+      "note": "社区公开版 v0.4.0-public.1。独立包名与设置项，避免与原版同时启用。"
+    }
+  }
+}
